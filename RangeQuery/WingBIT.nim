@@ -5,32 +5,35 @@ type
         lw : seq[Monoid]
         ide : Monoid
         sz : int
-        update : proc(node : Monoid , x : Monoid) : Monoid
+        update_func : proc(node : Monoid , x : Monoid) : Monoid
         f : proc(x : Monoid , y : Monoid) : Monoid
 proc newWingBIT*[Monoid](n : int , ide : Monoid,
-    update : proc(node : Monoid , x : Monoid) : Monoid , 
+    update_func : proc(node : Monoid , x : Monoid) : Monoid , 
     f : proc(x : Monoid , y : Monoid) : Monoid) : WingBIT[Monoid] =
     var bit : WingBIT[Monoid]
+    bit.rw = @[]
+    bit.lw = @[]
     bit.sz = 1
     while bit.sz < n: bit.sz = bit.sz * 2
-    bit.rw.setLen(bit.sz)
-    bit.lw.setLen(bit.sz)
+    bit.rw.setLen(bit.sz + 1)
+    bit.lw.setLen(bit.sz + 1)
     bit.rw.fill(ide)
     bit.lw.fill(ide)
     bit.ide = ide
-    bit.update = update
+    bit.update_func = update_func
     bit.f = f
+    return bit
 
-proc update*[Monoid](bit : WingBIT[Monoid] , k : int , x : Monoid) =
+proc update*[Monoid](bit : var WingBIT[Monoid] , k : int , x : Monoid) =
     var depth = 1
     var right = k
     var left = bit.sz + 1 - k
     while depth <= bit.sz:
-        if left and depth > 0:
-            bit.lw[left] = update(bit.lw[left],x)
+        if (left and depth) > 0:
+            bit.lw[left] = bit.update_func(bit.lw[left],x)
             left = left + depth
-        if right & depth > 0:
-            bit.rw[right] = update(bit.rw[right],x)
+        if (right and depth) > 0:
+            bit.rw[right] = bit.update_func(bit.rw[right],x)
             right = right + depth
         depth = depth shl 1
 
@@ -41,10 +44,10 @@ proc get_inter*[Monoid](bit : WingBIT[Monoid] , left : int , right : int) : Mono
     var l = bit.sz + 1 - left
     var r = right
     while bit.sz + 1 - l <= r:
-        if (l != bit.sz) and (l and depth > 0):
+        if (l != bit.sz) and ((l and depth) > 0):
             al = bit.f(bit.lw[l] , al)
             l -= depth
-        if r and depth > 0:
+        if (r and depth) > 0:
             ar = bit.f(ar , bit.rw[r])
             r -= depth
         depth = depth shl 1
