@@ -72,9 +72,10 @@ proc merge*[T](tree1 : var RBSTArray[T] , tree2 : var RBSTArray[T]) =
   tree1.root = merge(tree1.root , tree2.root)
   tree2.root = nil
 
-proc split*[T](tree1 : var RBSTArray[T] , k : int) : tuple[left : RBSTNode[T] , right : RBSTNode[T]] =
-  var s = split(tree1.root.split(k))
-  var left , right = newRBSTArray()
+proc split*[T](tree1 : var RBSTArray[T] , k : int) : tuple[left : RBSTArray[T] , right : RBSTArray[T]] =
+  var s = tree1.root.split(k)
+  var left = newRBSTArray[T]() 
+  var right = newRBSTArray[T]()
   left.root = s.l
   right.root = s.r
   return (left,right)
