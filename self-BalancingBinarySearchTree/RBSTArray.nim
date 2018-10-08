@@ -36,6 +36,8 @@ proc node_update[T](node : var RBSTNode[T]) : RBSTNode[T] =
 proc merge*[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
   if l == nil : return r
   if r == nil : return l
+  discard node_update(l)
+  discard node_update(r)
   if rand(rbstRand,l.node_size + r.node_size - 1) < l.node_size:
     l.right = merge(l.right , r)
     return node_update(l)
@@ -45,7 +47,7 @@ proc merge*[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
 
 proc split*[T](node : var RBSTNode[T] , k : int) : tuple[l : RBSTNode[T],r : RBSTNode[T]] =
   if node == nil: return (nil,nil)
-
+  discard node_update(node)
   if k <= node.left.node_size:
     var s = split(node.left , k)
     node.left = s.r
@@ -78,6 +80,7 @@ proc split*[T](tree1 : var RBSTArray[T] , k : int) : tuple[left : RBSTArray[T] ,
   var right = newRBSTArray[T]()
   left.root = s.l
   right.root = s.r
+  tree1.root = nil
   return (left,right)
 
 proc find[T](tree : RBSTArray[T] , k : int) : RBSTNode[T] =
