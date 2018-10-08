@@ -2,11 +2,16 @@ import random
 
 var rbstRand = initRand(10101010)
 
+proc IDE*(T : typedesc[bool]) : bool = return false
+proc OPE*(T : typedesc[bool]) : proc(a , b : bool) : bool = return proc (a , b : bool) : bool = a or b
+
+
 type
   RBSTNode[T] = ref object
     left,right : RBSTNode[T]
     val : T
     sz : int
+    ss : T
   RBSTArray[T] = object
     root* : RBSTNode[T]
 
@@ -16,6 +21,7 @@ proc newRBSTNode[T](val : T) : RBSTNode[T] =
   node.left = nil
   node.right = nil
   node.sz = 1
+  node.ss = val
   return node
 
 proc newRBSTArray*[T]() : RBSTArray[T] = 
@@ -27,11 +33,16 @@ proc size[T](node : RBSTNode[T]) : int =
   if node == nil: return 0
   return node.sz
 
+proc sum[T](node : RBSTNode[T]) : T =
+  if node == nil: 
+    return IDE(T)
+  return node.ss
+
 proc fix[T](node : var RBSTNode[T]) : RBSTNode[T] =
   if node == nil : return nil
   node.sz = 1 + node.left.size + node.right.size
+  node.ss = OPE(T)(OPE(T)(node.left.sum , node.ss) , node.right.sum)
   return node
-
 
 proc merge*[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
   if l == nil : return r
@@ -111,4 +122,3 @@ proc update*[T](node : var RBSTNode[T] , k : int , val : T) =
 
 proc set*[T](tree : var RBSTArray[T] , k : int , val : T) =
   update(tree.root , k , val)
-
