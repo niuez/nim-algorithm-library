@@ -66,7 +66,7 @@ proc erase*[T](tree : var RBSTArray[T] , k : int) =
   var t = split(tree.root , k + 1)
   var s = split(t.l , k)
   tree.root = merge(s.l , t.r)
-  node_update(tree.root)
+  discard node_update(tree.root)
   
 proc merge*[T](tree1 : var RBSTArray[T] , tree2 : var RBSTArray[T]) =
   tree1.root = merge(tree1.root , tree2.root)
