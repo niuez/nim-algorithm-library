@@ -8,7 +8,7 @@ proc xorshift() : uint64 =
   return seed
 
 proc IDE*(T : typedesc[int]) : int = return 10101010
-proc OPE*(T : typedesc[int]) : proc(a , b : int) : int = return proc (a , b : int) : int = min(a ,b)
+proc OPE*(T : typedesc[int] , a : T , b : T) : T = min(a , b)
 
 type
   RBSTNode[T] = ref object
@@ -45,7 +45,7 @@ proc sum[T](node : RBSTNode[T]) : T =
 proc fix[T](node : var RBSTNode[T]) : RBSTNode[T] =
   if node == nil : return nil
   node.sz = 1 + node.left.size + node.right.size
-  node.ss = OPE(T)(OPE(T)(node.left.sum , node.val) , node.right.sum)
+  node.ss = OPE(T , OPE(T , node.left.sum , node.val) , node.right.sum)
   return node
 
 proc merge*[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
@@ -136,7 +136,7 @@ proc query*[T](node : var RBSTNode[T] , left , right : int) : T =
   var sz = node.left.size
   var res = IDE(T)
   if l <= sz and sz < r: res = node.val
-  return OPE(T)(OPE(T)(query(node.left , l , r) , res) , query(node.right , l - sz - 1 , r - sz - 1))
+  return OPE(T , OPE(T,query(node.left , l , r) , res) , query(node.right , l - sz - 1 , r - sz - 1))
 
 proc fold*[T](tree : var RBSTArray[T] , left , right : int) : T = 
   return query(tree.root , left , right)
