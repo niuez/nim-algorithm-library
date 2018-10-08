@@ -96,5 +96,19 @@ proc find[T](tree : RBSTArray[T] , k : int) : RBSTNode[T] =
       now = now.left
   return now
 
-proc at*[T](tree : RBSTArray[T], k : int) : var T =
+proc at*[T](tree : RBSTArray[T], k : int) : T =
   return tree.find(k).val
+
+proc update*[T](node : var RBSTNode[T] , k : int , val : T) =
+  if node == nil: return
+  if node.left.size == k:
+    node.val = val
+  elif node.left.size < k:
+    update(node.right , k - node.left,size - 1)
+  else:
+    update(node.left , k)
+  discard fix(node)
+
+proc set*[T](tree : var RBSTArray[T] , k : int , val : T) =
+  update(tree.root , k , val)
+
