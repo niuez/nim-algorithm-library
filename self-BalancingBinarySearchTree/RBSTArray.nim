@@ -1,10 +1,14 @@
-import random
+var seed = 91'u64
+var mask = 0xFFFFFFFFFFFFFFFF'u64
 
-var rbstRand = initRand(10101010)
+proc xorshift() : uint64 =
+  seed = seed xor ((seed shl 13) and mask)
+  seed = seed xor (seed shr 7)
+  seed = seed xor ((seed shl 17) and mask)
+  return seed
 
-proc IDE*(T : typedesc[bool]) : bool = return false
-proc OPE*(T : typedesc[bool]) : proc(a , b : bool) : bool = return proc (a , b : bool) : bool = a or b
-
+proc IDE*(T : typedesc[int]) : int = return 10101010
+proc OPE*(T : typedesc[int]) : proc(a , b : int) : int = return proc (a , b : int) : int = min(a ,b)
 
 type
   RBSTNode[T] = ref object
@@ -41,7 +45,7 @@ proc sum[T](node : RBSTNode[T]) : T =
 proc fix[T](node : var RBSTNode[T]) : RBSTNode[T] =
   if node == nil : return nil
   node.sz = 1 + node.left.size + node.right.size
-  node.ss = OPE(T)(OPE(T)(node.left.sum , node.ss) , node.right.sum)
+  node.ss = OPE(T)(OPE(T)(node.left.sum , node.val) , node.right.sum)
   return node
 
 proc merge*[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
@@ -49,7 +53,7 @@ proc merge*[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
   if r == nil : return l
   discard fix(l)
   discard fix(r)
-  if rand(rbstRand,l.size + r.size - 1) < l.size:
+  if xorshift() mod (uint64)(l.size + r.size) < (uint64)l.size:
     l.right = merge(l.right , r)
     return fix(l)
   else:
@@ -115,10 +119,62 @@ proc update*[T](node : var RBSTNode[T] , k : int , val : T) =
   if node.left.size == k:
     node.val = val
   elif node.left.size < k:
-    update(node.right , k - node.left,size - 1)
+    update(node.right , k - node.left.size - 1 , val)
   else:
-    update(node.left , k)
+    update(node.left , k , val)
   discard fix(node)
 
 proc set*[T](tree : var RBSTArray[T] , k : int , val : T) =
   update(tree.root , k , val)
+
+proc query*[T](node : var RBSTNode[T] , left , right : int) : T = 
+  if node == nil: return IDE(T)
+  var l = max(left , 0)
+  var r = min(right , node.size)
+  if l >= r: return IDE(T)
+  if l == 0 and r == node.size: return node.sum
+  var sz = node.left.size
+  var res = IDE(T)
+  if l <= sz and sz < r: res = node.val
+  return OPE(T)(OPE(T)(query(node.left , l , r) , res) , query(node.right , l - sz - 1 , r - sz - 1))
+
+proc fold*[T](tree : var RBSTArray[T] , left , right : int) : T = 
+  return query(tree.root , left , right)
+
+# verify http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=1508
+
+import algorithm
+import strutils
+import sequtils
+
+var arr : RBSTArray[int] = newRBSTArray[int]()
+
+var temp = stdin.readline.split.map(parseInt)
+
+var n = temp[0]
+var q = temp[1]
+
+
+var a : array[202020,int]
+for i in 0..<n:
+  a[i] = stdin.readline.parseInt
+  arr.insert(i,a[i])
+
+for i in 0..<q:
+  var A = stdin.readline.split.map(parseInt)
+  var x = A[0]
+  var y = A[1]
+  var z = A[2]
+  if x == 0:
+    var s = arr.split(y)
+    var t = s.right.split(z + 1 - y)
+    var sz = t.left.root.size
+    var u = t.left.split(sz - 1)
+    u.right.merge(u.left)
+    s.left.merge(u.right)
+    s.left.merge(t.right)
+    arr = s.left
+  if x == 1:
+    echo arr.fold(y , z + 1)
+  if x == 2:
+    arr.set(y,z)
