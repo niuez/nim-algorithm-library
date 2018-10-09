@@ -8,8 +8,7 @@ proc xorshift() : uint64 =
   return seed
 
 proc IDE*(T : typedesc[int]) : int = return 10101010
-proc OPE*(T : typedesc[int] , a : T , b : T) : T = min(a , b)
-
+proc OPE*(a : int , b : int) : int = min(a , b)
 type
   TreapNode[T] = ref object
     left,right : TreapNode[T]
@@ -47,7 +46,7 @@ proc sum[T](node : TreapNode[T]) : T =
 proc fix[T](node : var TreapNode[T]) : TreapNode[T] =
   if node == nil : return nil
   node.sz = 1 + node.left.size + node.right.size
-  node.ss = OPE(T , OPE(T , node.left.sum , node.val) , node.right.sum)
+  node.ss = OPE(OPE(node.left.sum , node.val) , node.right.sum)
   return node
 
 proc merge*[T](l : var TreapNode[T] , r : var TreapNode[T]) : TreapNode[T] =
@@ -138,7 +137,7 @@ proc query*[T](node : var TreapNode[T] , left , right : int) : T =
   var sz = node.left.size
   var res = IDE(T)
   if l <= sz and sz < r: res = node.val
-  return OPE(T , OPE(T,query(node.left , l , r) , res) , query(node.right , l - sz - 1 , r - sz - 1))
+  return OPE(OPE(query(node.left , l , r) , res) , query(node.right , l - sz - 1 , r - sz - 1))
 
 proc fold*[T](tree : var TreapArray[T] , left , right : int) : T = 
   return query(tree.root , left , right)
