@@ -37,7 +37,7 @@ proc pop*[T](bin : var BinaryHeap[T]) =
     ## poop the top value of Binary Heap.O(logN)
     if bin.empty():
         return
-    swap(bin.heap[0],bin.heap[bin.heap.len - 1])  
+    swap(bin.heap[0],bin.heap[bin.heap.len - 1])
     discard bin.heap.pop()
     var i : int = 0
     while i * 2 + 1 < bin.size:
