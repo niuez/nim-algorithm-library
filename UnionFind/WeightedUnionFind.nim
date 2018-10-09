@@ -27,7 +27,7 @@ proc weight*(uf : var WeightedUnionFind , x : int) : int64 =
   return uf.val[x]
 
 proc unite*(uf : var WeightedUnionFind , x , y : int , wei : int64) : tuple[par : int,chi : int] =
-  ## x + w = y
+  ## |x->y| = w
   var a = uf.root(x)
   var b = uf.root(y)
   var w = wei + uf.weight(x) - uf.weight(y)
@@ -51,9 +51,10 @@ proc same*(uf : var WeightedUnionFind , x , y : int) : bool =
   return uf.root(x) == uf.root(y)
 
 proc diff(uf : var WeightedUnionFind , x , y : int) : tuple[issame : bool , weight : int64] =
+  ## |x->y|
   if not uf.same(x , y):
     return (false , 0'i64)
-  return (true , uf.weight(x) - uf.weight(y))
+  return (true , uf.weight(y) - uf.weight(x))
 
 #verify arc080 d
 
