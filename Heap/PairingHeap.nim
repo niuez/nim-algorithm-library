@@ -114,6 +114,3 @@ for i in 0..n * 2 - 1:
     echo s[i] , "=" , que.top
     assert s[i] == que.top
     que.pop
-
-
-
