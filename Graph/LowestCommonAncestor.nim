@@ -11,7 +11,7 @@ proc newGraph*[E](n : int) : Graph[E] =
 proc size*[E](g : Graph[E]) : int =
   return g.len
 
-type LowestCommonAncestor = object
+type LowestCommonAncestor* = object
   n : int
   log2_n : int
   parent : seq[seq[int]]
