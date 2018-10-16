@@ -2,22 +2,14 @@ import sequtils,math
 type
   Edge* = object
     to : int
-  Graph*[E] = object
-    edges : seq[seq[Edge]]
-    n : int
+  Graph*[E] = seq[seq[E]]
 
 proc newGraph*[E](n : int) : Graph[E] =
-  var g : Graph[E]
-  g.edges = newSeqWith(n , newSeq[E](0))
-  g.n = n
+  var g : Graph[E] = newSeqWith(n , newSeq[E](0))
   return g
 
-proc `[]`*[E](g : var Graph[E] , k : int) : var seq[Edge] =
-  return g.edges[k]
-
-proc `[]`*[E](g : Graph[E] , k : int) : seq[Edge] =
-  return g.edges[k]
-
+proc size*[E](g : Graph[E]) : int =
+  return g.len
 
 type LowestCommonAncestor = object
   n : int
@@ -27,7 +19,7 @@ type LowestCommonAncestor = object
 
 proc initLowestCommonAncestor*[E](g : Graph[E]) : LowestCommonAncestor =
   var lca : LowestCommonAncestor
-  lca.n = g.n
+  lca.n = g.size
   lca.log2_n = ((int)log2((float)lca.n) + 2)
   lca.parent = newSeqWith(lca.log2_n , newSeqWith(lca.n,0))
   lca.depth = newSeqWith(lca.n , 0)
