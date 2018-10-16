@@ -6,10 +6,12 @@ proc OPE*(x : TT , y : TT) : TT = return (y.a * x.a , y.a * x.b + y.b)
 
 type
     SegmentTree[Monoid] = object
+        ## Segment Tree Object
         node * : seq[Monoid]
         n * : int
 
 proc newSegmentTree*[Monoid](init : seq[Monoid]) : SegmentTree[Monoid] =
+    ## create Segment Tree Object. takes O(N)
     var seg : SegmentTree[Monoid]
     seg.n = 1
     var sz = init.len
@@ -20,13 +22,15 @@ proc newSegmentTree*[Monoid](init : seq[Monoid]) : SegmentTree[Monoid] =
     return seg
 
 proc update*[Monoid](seg : var SegmentTree[Monoid] , k : int , x : Monoid) =
+    ## update value to x. takes O(logN)
     var i = k + seg.n
     seg.node[i] = x
     while i > 1:
         i = i shr 1
         seg.node[i] = OPE(seg.node[i * 2] , seg.node[i * 2 + 1])
 
-proc get_inter*[Monoid](seg : SegmentTree[Monoid] , left : int , right : int) : Monoid=
+proc get_inter*[Monoid](seg : SegmentTree[Monoid] , left : int , right : int) : Monoid =
+    ## fold for interval. takes O(logN)
     var L = Monoid.IDE
     var R = Monoid.IDE
     var l = left + seg.n
@@ -43,6 +47,7 @@ proc get_inter*[Monoid](seg : SegmentTree[Monoid] , left : int , right : int) : 
     return OPE(L , R)
 
 proc at*[Monoid](seg : SegmentTree[Monoid] , i : int) : Monoid =
+    ## get value indexed i. O(1)
     return seg.node[i + seg.n]
 
 import algorithm

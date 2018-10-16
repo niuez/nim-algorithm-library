@@ -1,11 +1,13 @@
 import sequtils
 type
   WeightedUnionFind = object
+    ## WeightedUnionFind object
     par : seq[int]
     rank : seq[int]
     val : seq[int64]
 
 proc newWeightedUnionFind*(n : int) : WeightedUnionFind =
+  ## create WeightUnionFind object
   var uf : WeightedUnionFind
   uf.par = newSeq[int](n)
   for i in 0..<n:
@@ -15,6 +17,7 @@ proc newWeightedUnionFind*(n : int) : WeightedUnionFind =
   return uf
 
 proc root*(uf : var WeightedUnionFind, x : int) : int =
+  ## root of x. amortized a(N) 
   if uf.par[x] == x:
     return x
   var parent = uf.root(uf.par[x])
@@ -23,11 +26,12 @@ proc root*(uf : var WeightedUnionFind, x : int) : int =
   return uf.par[x]
 
 proc weight*(uf : var WeightedUnionFind , x : int) : int64 =
+  ## get weight of x. amortized a(N)
   discard uf.root(x)
   return uf.val[x]
 
 proc unite*(uf : var WeightedUnionFind , x , y : int , wei : int64) : tuple[par : int,chi : int] =
-  ## |x->y| = w
+  ## x---w--->y
   var a = uf.root(x)
   var b = uf.root(y)
   var w = wei + uf.weight(x) - uf.weight(y)
@@ -48,10 +52,11 @@ proc unite*(uf : var WeightedUnionFind , x , y : int , wei : int64) : tuple[par 
   return (r , c)
 
 proc same*(uf : var WeightedUnionFind , x , y : int) : bool =
+  ## return true if x and y are jointed. amortized a(N)
   return uf.root(x) == uf.root(y)
 
 proc diff(uf : var WeightedUnionFind , x , y : int) : tuple[issame : bool , weight : int64] =
-  ## |x->y|
+  ## difference from x to y. amortized a(N)
   if not uf.same(x , y):
     return (false , 0'i64)
   return (true , uf.weight(y) - uf.weight(x))

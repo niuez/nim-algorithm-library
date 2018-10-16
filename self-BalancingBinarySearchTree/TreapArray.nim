@@ -17,6 +17,7 @@ type
     ss : T
     pri : uint64
   TreapArray[T] = object
+    ## TreapArray Object
     root* : TreapNode[T]
 
 proc newTreapNode[T](val : T) : TreapNode[T] = 
@@ -30,6 +31,7 @@ proc newTreapNode[T](val : T) : TreapNode[T] =
   return node
 
 proc newTreapArray*[T]() : TreapArray[T] = 
+  ## create new TreapArray
   var tree : TreapArray[T]
   tree.root = nil
   return tree
@@ -49,7 +51,7 @@ proc fix[T](node : var TreapNode[T]) : TreapNode[T] =
   node.ss = OPE(OPE(node.left.sum , node.val) , node.right.sum)
   return node
 
-proc merge*[T](l : var TreapNode[T] , r : var TreapNode[T]) : TreapNode[T] =
+proc merge[T](l : var TreapNode[T] , r : var TreapNode[T]) : TreapNode[T] =
   if l == nil : return r
   if r == nil : return l
   discard fix(l)
@@ -61,7 +63,7 @@ proc merge*[T](l : var TreapNode[T] , r : var TreapNode[T]) : TreapNode[T] =
     r.left = merge(l , r.left)
     return fix(r)
 
-proc split*[T](node : var TreapNode[T] , k : int) : tuple[l : TreapNode[T],r : TreapNode[T]] =
+proc split[T](node : var TreapNode[T] , k : int) : tuple[l : TreapNode[T],r : TreapNode[T]] =
   if node == nil: return (nil,nil)
   discard fix(node)
   if k <= node.left.size:
@@ -74,6 +76,7 @@ proc split*[T](node : var TreapNode[T] , k : int) : tuple[l : TreapNode[T],r : T
     return (fix(node) , s.r)
 
 proc insert*[T](tree : var TreapArray[T] , k : int , val : T) =
+  ## insert val at k. takes O(logN)
   var s = split(tree.root , k)
   var z = newTreapNode(val)
   tree.root = merge(s.l , z)
@@ -81,16 +84,19 @@ proc insert*[T](tree : var TreapArray[T] , k : int , val : T) =
   discard fix(tree.root)
 
 proc erase*[T](tree : var TreapArray[T] , k : int) =
+  ## erase node at k. takes O(logN)
   var t = split(tree.root , k + 1)
   var s = split(t.l , k)
   tree.root = merge(s.l , t.r)
   discard fix(tree.root)
   
 proc merge*[T](tree1 : var TreapArray[T] , tree2 : var TreapArray[T]) =
+  ## merge array. takes O(logN)
   tree1.root = merge(tree1.root , tree2.root)
   tree2.root = nil
 
 proc split*[T](tree1 : var TreapArray[T] , k : int) : tuple[left : TreapArray[T] , right : TreapArray[T]] =
+  ## split array to [0..k-1] and [k..N - 1]. takes O(logN)
   var s = tree1.root.split(k)
   var left = newTreapArray[T]() 
   var right = newTreapArray[T]()
@@ -113,9 +119,10 @@ proc find[T](tree : TreapArray[T] , k : int) : TreapNode[T] =
   return now
 
 proc at*[T](tree : TreapArray[T], k : int) : T =
+  ## node at k of array. takes O(logN)
   return tree.find(k).val
 
-proc update*[T](node : var TreapNode[T] , k : int , val : T) =
+proc update[T](node : var TreapNode[T] , k : int , val : T) =
   if node == nil: return
   if node.left.size == k:
     node.val = val
@@ -126,9 +133,10 @@ proc update*[T](node : var TreapNode[T] , k : int , val : T) =
   discard fix(node)
 
 proc set*[T](tree : var TreapArray[T] , k : int , val : T) =
+  ## update value at k to val. takes O(logN)
   update(tree.root , k , val)
 
-proc query*[T](node : var TreapNode[T] , left , right : int) : T = 
+proc query[T](node : var TreapNode[T] , left , right : int) : T = 
   if node == nil: return IDE(T)
   var l = max(left , 0)
   var r = min(right , node.size)
@@ -140,6 +148,7 @@ proc query*[T](node : var TreapNode[T] , left , right : int) : T =
   return OPE(OPE(query(node.left , l , r) , res) , query(node.right , l - sz - 1 , r - sz - 1))
 
 proc fold*[T](tree : var TreapArray[T] , left , right : int) : T = 
+  ## fold interval. takes O(logN)
   return query(tree.root , left , right)
 
 # verify http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=1508

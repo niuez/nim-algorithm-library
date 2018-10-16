@@ -6,10 +6,12 @@ proc OPE*(x : TT , y : TT) : TT = return (y.a * x.a , y.a * x.b + y.b)
  
 type
   WingBIT[Monoid] = object
+    ##  WingBIT object
     rw : seq[Monoid]
     lw : seq[Monoid]
     sz : int
 proc newWingBIT*[Monoid](n : int) : WingBIT[Monoid] =
+  ## create WingBIT object. takes O(N)
   var bit : WingBIT[Monoid]
   bit.rw = @[]
   bit.lw = @[]
@@ -22,6 +24,7 @@ proc newWingBIT*[Monoid](n : int) : WingBIT[Monoid] =
   return bit
  
 proc update*[Monoid](bit : var WingBIT[Monoid] , k : int , x : Monoid) =
+  ## update value to x. takes O(logN)
   var depth = 1
   var right = k
   var left = bit.sz + 1 - k
@@ -43,6 +46,7 @@ proc update*[Monoid](bit : var WingBIT[Monoid] , k : int , x : Monoid) =
     depth = depth shl 1
  
 proc get_inter*[Monoid](bit : WingBIT[Monoid] , left : int , right : int) : Monoid =
+  ## fold for interval. takes O(logN)
   var al = IDE(Monoid)
   var ar = IDE(Monoid)
   var depth = 1
@@ -57,12 +61,16 @@ proc get_inter*[Monoid](bit : WingBIT[Monoid] , left : int , right : int) : Mono
       r -= depth
     depth = depth shl 1
   return OPE(ar,al)
- 
-proc `[]`*[Monoid](bit : var WingBIT[Monoid] , k : int , x : Monoid) : Monoid =
+
+proc at*[Monoid](bit : WingBIT[Monoid] , k : int) : Monoid =
+  ## get value indexed i. O(1)
   if k and 1 == 1:
     return bit.right[k]
   else:
     return bit.left[bit.sz + 1 - k]
+ 
+proc `[]`*[Monoid](bit : var WingBIT[Monoid] , k : int) : Monoid =
+  return bit.at(k)
  
 proc `[]`*[Monoid](bit : var WingBIT[Monoid] , l : int , r : int) : Monoid =
   return bit.get_inter(l,r)

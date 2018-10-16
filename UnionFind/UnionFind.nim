@@ -1,10 +1,12 @@
 import sequtils
 type
   UnionFind[T]= object
+    ## UnionFind Object.
     par : seq[int]
     rank : seq[int]
 
 proc newUnionFind*[T](n : int) : UnionFind[T] =
+  ## create new UnionFind Object.
   var uf : UnionFind[T]
   uf.par = newSeq[int](n)
   for i in 0..<n:
@@ -13,12 +15,17 @@ proc newUnionFind*[T](n : int) : UnionFind[T] =
   return uf
 
 proc root*[T](uf : var UnionFind[T], x : int) : int =
+  ## root of x. amortized a(N)
   if uf.par[x] == x:
     return x
   uf.par[x] = uf.root(uf.par[x])
   return uf.par[x]
 
 proc unite*[T](uf : var UnionFind[T] , x , y : int) : tuple[par : int,chi : int] =
+  ## unite x and y
+  ## if x and y are already jointed, return (-1,-1)
+  ## else return (par , chi) 
+  ## amortized a(N)
   var a = uf.root(x)
   var b = uf.root(y)
   if a == b:
@@ -36,7 +43,10 @@ proc unite*[T](uf : var UnionFind[T] , x , y : int) : tuple[par : int,chi : int]
   return (r , c)
 
 proc same*[T](uf : var UnionFind[T] , x , y : int) : bool =
+  ## return true if x and y are jointed. amortized a(N)
   return uf.root(x) == uf.root(y)
+
+# verify https://atc001.contest.atcoder.jp/tasks/unionfind_a
 
 import algorithm
 import strutils

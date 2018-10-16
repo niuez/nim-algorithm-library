@@ -16,7 +16,8 @@ type
     val : T
     sz : int
     ss : T
-  RBSTArray[T] = object
+  RBSTArray*[T] = object
+    ## RBSTArray Object
     root* : RBSTNode[T]
 
 proc newRBSTNode[T](val : T) : RBSTNode[T] = 
@@ -28,7 +29,8 @@ proc newRBSTNode[T](val : T) : RBSTNode[T] =
   node.ss = val
   return node
 
-proc newRBSTArray*[T]() : RBSTArray[T] = 
+proc newRBSTArray*[T]() : RBSTArray[T] =
+  ## create new RBSTArray.
   var tree : RBSTArray[T]
   tree.root = nil
   return tree
@@ -48,7 +50,7 @@ proc fix[T](node : var RBSTNode[T]) : RBSTNode[T] =
   node.ss = OPE(OPE(node.left.sum , node.val) , node.right.sum)
   return node
 
-proc merge*[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
+proc merge[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
   if l == nil : return r
   if r == nil : return l
   discard fix(l)
@@ -60,7 +62,7 @@ proc merge*[T](l : var RBSTNode[T] , r : var RBSTNode[T]) : RBSTNode[T] =
     r.left = merge(l , r.left)
     return fix(r)
 
-proc split*[T](node : var RBSTNode[T] , k : int) : tuple[l : RBSTNode[T],r : RBSTNode[T]] =
+proc split[T](node : var RBSTNode[T] , k : int) : tuple[l : RBSTNode[T],r : RBSTNode[T]] =
   if node == nil: return (nil,nil)
   discard fix(node)
   if k <= node.left.size:
@@ -73,6 +75,7 @@ proc split*[T](node : var RBSTNode[T] , k : int) : tuple[l : RBSTNode[T],r : RBS
     return (fix(node) , s.r)
 
 proc insert*[T](tree : var RBSTArray[T] , k : int , val : T) =
+  ## insert val at k. takes O(logN)
   var s = split(tree.root , k)
   var z = newRBSTNode(val)
   tree.root = merge(s.l , z)
@@ -80,16 +83,19 @@ proc insert*[T](tree : var RBSTArray[T] , k : int , val : T) =
   discard fix(tree.root)
 
 proc erase*[T](tree : var RBSTArray[T] , k : int) =
+  ## erase node at k. takes O(logN)
   var t = split(tree.root , k + 1)
   var s = split(t.l , k)
   tree.root = merge(s.l , t.r)
   discard fix(tree.root)
   
 proc merge*[T](tree1 : var RBSTArray[T] , tree2 : var RBSTArray[T]) =
+  ## merge array. takes O(logN)
   tree1.root = merge(tree1.root , tree2.root)
   tree2.root = nil
 
 proc split*[T](tree1 : var RBSTArray[T] , k : int) : tuple[left : RBSTArray[T] , right : RBSTArray[T]] =
+  ## split array to [0..k-1] and [k..N - 1]. takes O(logN)
   var s = tree1.root.split(k)
   var left = newRBSTArray[T]() 
   var right = newRBSTArray[T]()
@@ -112,9 +118,10 @@ proc find[T](tree : RBSTArray[T] , k : int) : RBSTNode[T] =
   return now
 
 proc at*[T](tree : RBSTArray[T], k : int) : T =
+  ## node at k of array. takes O(logN)
   return tree.find(k).val
 
-proc update*[T](node : var RBSTNode[T] , k : int , val : T) =
+proc update[T](node : var RBSTNode[T] , k : int , val : T) =
   if node == nil: return
   if node.left.size == k:
     node.val = val
@@ -125,9 +132,10 @@ proc update*[T](node : var RBSTNode[T] , k : int , val : T) =
   discard fix(node)
 
 proc set*[T](tree : var RBSTArray[T] , k : int , val : T) =
+  ## update value at k to val. takes O(logN)
   update(tree.root , k , val)
 
-proc query*[T](node : var RBSTNode[T] , left , right : int) : T = 
+proc query[T](node : var RBSTNode[T] , left , right : int) : T = 
   if node == nil: return IDE(T)
   var l = max(left , 0)
   var r = min(right , node.size)
@@ -138,7 +146,8 @@ proc query*[T](node : var RBSTNode[T] , left , right : int) : T =
   if l <= sz and sz < r: res = node.val
   return OPE(OPE(query(node.left , l , r) , res) , query(node.right , l - sz - 1 , r - sz - 1))
 
-proc fold*[T](tree : var RBSTArray[T] , left , right : int) : T = 
+proc fold*[T](tree : var RBSTArray[T] , left , right : int) : T =
+  ## fold interval. takes O(logN)
   return query(tree.root , left , right)
 
 # verify http://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=1508

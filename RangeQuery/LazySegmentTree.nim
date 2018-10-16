@@ -15,12 +15,14 @@ proc OPE*(x : Mini , y : Mini) : Mini = return Mini(val : min(x.val,y.val))
 
 type
   LazySegment*[Monoid,Lazy] = object
+    ## Lazy Segment Tree Object
     node * : seq[Monoid]
     lazy * : seq[Lazy]
     flag * : seq[bool]
     n : int
 
 proc newLazySegment*[Monoid,Lazy](init : seq[Monoid]) : LazySegment[Monoid,Lazy] =
+  ## create Lazy Segment Tree Object. takes O(N)
   var seg : LazySegment[Monoid,Lazy]
   seg.n = 1
   var sz = init.len
@@ -57,6 +59,7 @@ proc u_inter[Monoid,Lazy](s : var LazySegment[Monoid,Lazy] , a , b : int , x : L
 
 
 proc update_inter*[Monoid,Lazy](s : var LazySegment[Monoid,Lazy] , a , b : int , x : Lazy) =
+  ## update for interval. O(logN)
   s.u_inter(a,b,x,0,0,s.n)
 
 proc g_inter[Monoid,Lazy](s : var LazySegment[Monoid,Lazy] , a , b : int , k : int , l : int, r : int) : Monoid =
@@ -66,6 +69,7 @@ proc g_inter[Monoid,Lazy](s : var LazySegment[Monoid,Lazy] , a , b : int , k : i
   return OPE(s.g_inter(a,b,k * 2 + 1,l,(l + r) div 2),s.g_inter(a,b,k*2+2,(l + r) div 2,r))
 
 proc get_inter*[Monoid,Lazy](s : var LazySegment[Monoid,Lazy] , a , b : int) : Monoid =
+  ## fold for interval. O(logN)
   return s.g_inter(a,b,0,0,s.n)
 
 # verify arc045-b

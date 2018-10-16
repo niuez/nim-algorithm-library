@@ -1,14 +1,18 @@
 import sequtils
 type
   Edge* = object
+    ## Edge Object , edit this to add more information like distance.
     to : int
   Graph*[E] = seq[seq[E]]
+    ## Graph Object.
 
 proc newGraph*[E](n : int) : Graph[E] =
+  ## create n size new Graph.
   var g : Graph[E] = newSeqWith(n , newSeq[E](0))
   return g
 
 proc size*[E](g : Graph[E]) : int =
+  ## size of Graph
   return g.len
 
 proc cssdfs[E](g : Graph[E] , v : int , vs : var seq[int] , vis : var seq[bool]) =
@@ -25,6 +29,7 @@ proc cssrdfs[E](g : Graph[E] , v : int , k : int , res : var seq[int] , vis : va
     if not vis[to]: g.cssrfds(to,k,res,vis)
 
 proc stronglyConnectedComponect*[E](g : Graph[E]) : seq[int] =
+  ## get group number of each vertex. takesO(logN)
   var rg = newGraph[E](g.size)
   for i in 0..<g.size:
     for e in g[i]:

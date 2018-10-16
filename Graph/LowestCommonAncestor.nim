@@ -1,23 +1,31 @@
 import sequtils,math
 type
   Edge* = object
+    ## Edge Object , edit this to add more information like distance.
     to : int
   Graph*[E] = seq[seq[E]]
+    ## Graph Object.
 
 proc newGraph*[E](n : int) : Graph[E] =
+  ## create n size new Graph.
   var g : Graph[E] = newSeqWith(n , newSeq[E](0))
   return g
 
 proc size*[E](g : Graph[E]) : int =
+  ## size of Graph
   return g.len
 
 type LowestCommonAncestor* = object
+  ## LowestCommonAncestor Object
+  ## depth of x is distance from x to root(default 0) 
   n : int
   log2_n : int
   parent : seq[seq[int]]
-  depth : seq[int]
+  depth* : seq[int]
 
-proc initLowestCommonAncestor*[E](g : Graph[E]) : LowestCommonAncestor =
+proc initLowestCommonAncestor*[E](g : Graph[E] , root = 0) : LowestCommonAncestor =
+  ## create LowestCommonAncestor instance.
+  ## takes O(NlonN) for doubling
   var lca : LowestCommonAncestor
   lca.n = g.size
   lca.log2_n = ((int)log2((float)lca.n) + 2)
@@ -36,6 +44,7 @@ proc initLowestCommonAncestor*[E](g : Graph[E]) : LowestCommonAncestor =
       else: lca.parent[k + 1][v] = lca.parent[k][lca.parent[k][v]]
   return lca
 proc getLowestCommonAncestor*(lca : LowestCommonAncestor,a : int , b : int) : tuple[parent : int , depth : int]=
+  ## get LCA. takes O(lonN)
   var
     u = a
     v = b
@@ -51,8 +60,8 @@ proc getLowestCommonAncestor*(lca : LowestCommonAncestor,a : int , b : int) : tu
   u = lca.parent[0][u]
   return (u , lca.depth[u])
 
-
 proc dist*(lca : LowestCommonAncestor , a : int , b : int) : int =
+  ## get distance from a to b. takes O(logN)
   return lca.depth[a] + lca.depth[b] - lca.getLowestCommonAncestor(a , b).depth * 2
 
 
