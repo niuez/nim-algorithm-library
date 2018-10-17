@@ -19,6 +19,7 @@ proc size*[E](g : Graph[E]) : int =
   return g.len
 
 proc addEdge(g : var Dinic , fr , to , cap , rev_cap : int) =
+  ## add Edge to Graph for Dinic
   g[to].add(DinicEdge(to : fr , cap : rev_cap , rev : g[fr].len))
   g[fr].add(DinicEdge(to : to , cap : cap , rev : g[to].len - 1))
 
@@ -48,7 +49,8 @@ proc dinic_dfs(g : var Dinic , v , t , f : int , itr : var seq[int] , level : va
       itr[v] += 1
   return 0
 
-proc max_flow(g : var Dinic , s , t : int) : int =
+proc max_flow*(g : var Dinic , s , t : int) : int =
+  ## get max_flow of g. taks O(V^2 E)
   var res = 0
   var flow = 0
   while true:
