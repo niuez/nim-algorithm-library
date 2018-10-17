@@ -20,8 +20,8 @@ proc size*[E](g : Graph[E]) : int =
 
 proc addEdge(g : var Dinic , fr , to , cap , rev_cap : int) =
   ## add Edge to Graph for Dinic
-  g[to].add(DinicEdge(to : fr , cap : cap , rev : g[fr].len))
-  g[fr].add(DinicEdge(to : to , cap : rev_cap , rev : g[to].len - 1))
+  g[fr].add(DinicEdge(to : to , cap : cap , rev : g[to].len))
+  g[to].add(DinicEdge(to : fr , cap : rev_cap , rev : g[fr].len - 1))
 
 proc dinic_level(g : Dinic , s , t : int) : seq[int] =
   var
