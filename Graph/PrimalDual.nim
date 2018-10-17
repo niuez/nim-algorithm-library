@@ -113,6 +113,7 @@ proc addEdge(g : var PrimalDual , fr , to , cost , cap , rev_cap : int) =
   g[to].add(PDEdge(to : fr , cost : -cost, cap : rev_cap , rev : g[fr].len - 1))
 
 proc minimumCostFlow(g : var PrimalDual , s , t , F : int) : int =
+  ## minimum Cost Flow with PrimalDual. takes O(V^2 U C) U...sum of cap. C...sum of cost
   type P = tuple[d : int , v : int]
   var
     que = newPairingHeap[P](proc(x , y : P) : bool = x.d < y.d)
