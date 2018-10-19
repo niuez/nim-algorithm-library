@@ -3,6 +3,7 @@ type
     val : int
 
 proc inv_mod*(A , M : int) : int =
+  ## Extended Euclidean Algorithm. takes O(loglogN)
   var
     a = A
     b = M
@@ -18,25 +19,44 @@ proc inv_mod*(A , M : int) : int =
     a = tmp
   return (A + M) mod M    
 
-proc newMint*[M](val : int) : mint[M] =
+proc nM*[M](val : int) : mint[M] =
+  ## create new mint[M] with val.
   return mint[M](val : (val mod M + M) mod M)
 
 proc `$`*[M](m : mint[M]) : string = return m.val.intToStr
-proc `+`*[M](a : mint[M] , b : mint[M]) : mint[M] = return mint[M](val : (a.val + b.val) mod M)
-proc `-`*[M](a : mint[M] , b : mint[M]) : mint[M] = return mint[M](val : (a.val - b.val + M) mod M)
-proc `*`*[M](a : mint[M] , b : mint[M]) : mint[M] = return mint[M](val : (a.val * b.val) mod M)
-proc `/`*[M](a : mint[M] , b : mint[M]) : mint[M] = return mint[M](val : (a.val * inv_mod(b.val , M)) mod M)
-proc `+`*[M](a : mint[M] , b : int) : mint[M]     = return mint[M](val : (a.val + b) mod M)
-proc `-`*[M](a : mint[M] , b : int) : mint[M]     = return mint[M](val : (a.val - b + M) mod M)
-proc `*`*[M](a : mint[M] , b : int) : mint[M]     = return mint[M](val : (a.val * b) mod M)
-proc `/`*[M](a : mint[M] , b : int) : mint[M]     = return mint[M](val : (a.val * inv_mod(b , M)) mod M)
-proc `+`*[M](a : int , b : mint[M]) : mint[M]     = return mint[M](val : (a + b.val) mod M)
-proc `-`*[M](a : int , b : mint[M]) : mint[M]     = return mint[M](val : (a - b.val + M) mod M)
-proc `*`*[M](a : int , b : mint[M]) : mint[M]     = return mint[M](val : (a * b.val) mod M)
-proc `/`*[M](a : int , b : mint[M]) : mint[M]     = return mint[M](val : (a * inv_mod(b.val , M)) mod M)
+proc `+`*[M](a : mint[M] , b : mint[M]) : mint[M] = 
+  return mint[M](val : (a.val + b.val) mod M)
+proc `-`*[M](a : mint[M] , b : mint[M]) : mint[M] = 
+  return mint[M](val : (a.val - b.val + M) mod M)
+proc `*`*[M](a : mint[M] , b : mint[M]) : mint[M] = 
+  return mint[M](val : (a.val * b.val) mod M)
+proc `/`*[M](a : mint[M] , b : mint[M]) : mint[M] = 
+  ## division on Z/MZ, takes O(loglogN)
+  return mint[M](val : (a.val * inv_mod(b.val , M)) mod M)
+
+proc `+`*[M](a : mint[M] , b : int) : mint[M] = 
+  return mint[M](val : (a.val + b) mod M)
+proc `-`*[M](a : mint[M] , b : int) : mint[M] = 
+  return mint[M](val : (a.val - b + M) mod M)
+proc `*`*[M](a : mint[M] , b : int) : mint[M] = 
+  return mint[M](val : (a.val * b) mod M)
+proc `/`*[M](a : mint[M] , b : int) : mint[M] = 
+  ## division on Z/MZ, takes O(loglogN)
+  return mint[M](val : (a.val * inv_mod(b , M)) mod M)
+
+proc `+`*[M](a : int , b : mint[M]) : mint[M] = 
+  return mint[M](val : (a + b.val) mod M)
+proc `-`*[M](a : int , b : mint[M]) : mint[M] = 
+  return mint[M](val : (a - b.val + M) mod M)
+proc `*`*[M](a : int , b : mint[M]) : mint[M] = 
+  return mint[M](val : (a * b.val) mod M)
+proc `/`*[M](a : int , b : mint[M]) : mint[M] = 
+  ## division on Z/MZ, takes O(loglogN)
+  return mint[M](val : (a * inv_mod(b.val , M)) mod M)
 proc `^`*[M](a : mint[M] , b : int) : mint[M] =
+  ## power. takes O(logN)
   var
-    ans = newMint[M](1)
+    ans = nM[M](1)
     c = a
     r = b
   while r > 0:
@@ -44,6 +64,7 @@ proc `^`*[M](a : mint[M] , b : int) : mint[M] =
     c = c * c
     r = r shr 1
   return ans
+
 type MM = mint[(int)(1e9 + 7)]
 
 proc IDE*(T : typedesc[MM]) : MM = return MM(val : 0)

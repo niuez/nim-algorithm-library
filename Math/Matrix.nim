@@ -1,7 +1,8 @@
 import sequtils
 
-proc IDE*(T : typedesc[int]) : int = return 0
-proc PRO*(T : typedesc[int]) : int = return 1
+proc IDE*(T : typedesc[int]) : int = return 0 ## identity element of int for operator +
+
+proc PRO*(T : typedesc[int]) : int = return 1 ## identity element of int for operator *
 
 type Matrix*[T] = seq[seq[T]]
 
