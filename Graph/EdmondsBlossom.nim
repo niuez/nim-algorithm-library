@@ -52,7 +52,7 @@ proc getSUM(mu,phi : seq[int] , x , y : int) : seq[bool] =
   vis[i] = true
   return vis
 
-proc EdmondsBlossom*[E](g : Graph[E]) : int =
+proc EdmondsBlossom*[E](g : Graph[E]) : seq[tuple[x : int , y : int]] =
   ## Edmonds Blossom Alogrithm for maximum matching of general graphs.
   ## takes O(N^3)
   var
@@ -123,10 +123,10 @@ proc EdmondsBlossom*[E](g : Graph[E]) : int =
         var vis = getSUM(mu,phi,x,y)
         for i in 0..<N:
           if vis[rho[i]]: rho[i] = r
-  var ans = 0
+  var ans = newSeq[tuple[x : int , y : int]]()
   for i in 0..<N:
     if i < mu[i]:
-      inc(ans)
+      ans.add((i , mu[i]))
   return ans
 
 import strutils
@@ -143,4 +143,4 @@ for i in 0..<M:
   g[s[0]].add(Edge(to : s[1] + N))
   g[s[1] + N].add(Edge(to : s[0]))
 
-echo EdmondsBlossom(g)
+echo EdmondsBlossom(g).len
