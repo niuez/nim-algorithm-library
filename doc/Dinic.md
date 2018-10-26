@@ -1,10 +1,10 @@
 # Dinic
 
-## DinicEdge
+## NWEdge
 
 Edge Object , edit this to add more information like distance.
 ```nim
-DinicEdge* = object
+NWEdge* = object
   to: int
   cap: int
   rev: int
@@ -16,11 +16,11 @@ DinicEdge* = object
 ```nim
 Graph*[E] = seq[seq[E]]
 ```
-## Dinic
+## Network
 
 Graph Object.
 ```nim
-Dinic* = Graph[DinicEdge]
+Network* = Graph[NWEdge]
 ```
 ## newGraph
 
@@ -38,5 +38,5 @@ proc size*[E](g: Graph[E]): int
 
 get max_flow of g. taks O(V^2 E)
 ```nim
-proc max_flow*(g: var Dinic; s, t: int): int
+proc max_flow*(g: var Network; s, t: int): int
 ```
