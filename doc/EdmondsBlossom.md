@@ -30,5 +30,5 @@ proc size*[E](g: Graph[E]): int
 
 Edmonds Blossom Alogrithm for maximum matching of general graphs. takes O(N^3)
 ```nim
-proc EdmondsBlossom*[E](g: Graph[E]): int
+proc EdmondsBlossom*[E](g: Graph[E]): seq[tuple[x: int, y: int]]
 ```
