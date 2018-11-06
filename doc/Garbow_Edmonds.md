@@ -1,0 +1,34 @@
+# Garbow_Edmonds
+
+## Edge
+
+Edge Object , edit this to add more information like distance.
+```nim
+Edge* = object
+  to: int
+
+```
+## Graph
+
+Graph Object.
+```nim
+Graph*[E] = seq[seq[E]]
+```
+## newGraph
+
+create n size new Graph.
+```nim
+proc newGraph*[E](n: int): Graph[E]
+```
+## size
+
+size of Graph
+```nim
+proc size*[E](g: Graph[E]): int
+```
+## GarbowEdmonds
+
+unweighted maximum matching of general graphs. takes O(VElogV)
+```nim
+proc GarbowEdmonds*[E](g: Graph[E]): seq[tuple[x: int, y: int]]
+```
