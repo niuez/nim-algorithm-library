@@ -1,4 +1,4 @@
-# Garbow_Edmonds
+# Gabow_Edmonds
 
 ## Edge
 
