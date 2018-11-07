@@ -126,7 +126,7 @@ proc augument_check(edm : var Edm , u : int) : bool =
   return false
 
 
-proc GarbowEdmonds*[E](g : Graph[E]) : seq[tuple[x : int , y : int]] =
+proc GabowEdmonds*[E](g : Graph[E]) : seq[tuple[x : int , y : int]] =
   ## unweighted maximum matching of general graphs. takes O(VElogV)
   # E0
   var edm = g.initGE()
@@ -186,4 +186,4 @@ for i in 0..<N:
       g[j + N].add(Edge(to : i))
       g[i].add(Edge(to : j + N))
       
-echo g.GarbowEdmonds().len
+echo g.GabowEdmonds().len
