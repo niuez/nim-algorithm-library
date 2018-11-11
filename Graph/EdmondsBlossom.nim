@@ -118,6 +118,15 @@ proc EdmondsBlossom*[E](g : Graph[E]) : seq[tuple[x : int , y : int]] =
           else:
             v = mu[v]
           now = now xor true
+        v = y
+        while v != r:
+          if now:
+            if rho[phi[v]] != r:
+              phi[phi[v]] = v
+            v = phi[v]
+          else:
+            v = mu[v]
+          now = now xor true
         if rho[x] != r: rho[x] = y
         if rho[y] != r: rho[y] = x
         var vis = getSUM(mu,phi,x,y)
@@ -130,17 +139,30 @@ proc EdmondsBlossom*[E](g : Graph[E]) : seq[tuple[x : int , y : int]] =
   return ans
 
 import strutils
-
-var n = stdin.readline.split.map(parseInt)
+ 
 var
-  N = n[0]
-  a = n[1]
-  M = n[2]
-var g = newGraph[Edge](N + a)
-
-for i in 0..<M:
-  var s = stdin.readline.split.map(parseInt)
-  g[s[0]].add(Edge(to : s[1] + N))
-  g[s[1] + N].add(Edge(to : s[0]))
-
-echo EdmondsBlossom(g).len
+  temp = stdin.readline.split.map(parseInt)
+  r = temp[0]
+  c = temp[1]
+  g = newGraph[Edge](r * c)
+  C = newSeq[string](r)
+  dx = @[1,-1,0,0]
+  dy = @[0,0,1,-1]
+  cnt = 0
+for cc in C.mitems:
+  cc = stdin.readline
+  cnt += cc.count('.')
+ 
+ 
+for i in 0..<r:
+  for j in 0..<c:
+    if ((i + j) and 1) == 1 or C[i][j] == '*': continue
+    for di in 0..<4:
+      var
+        nx = i + dx[di]
+        ny = j + dy[di]
+      if 0 <= nx and nx < r and 0 <= ny and ny < c and C[nx][ny] == '.':
+        g[i * c + j].add(Edge(to : nx * c + ny))
+        g[nx * c + ny].add(Edge(to : i * c + j))
+ 
+echo cnt - g.EdmondsBlossom().len
